@@ -12,7 +12,7 @@ Atmosphere Merger is a tool that should be used to merge community atmospheres _
 
 ## Usage
 It's pretty straithforward, but if you need some instructions, here you go:
-- download the Atmosphere Merger from releases page
+- download the Atmosphere Merger from [releases page](https://github.com/Ishidawg/AtmospheresMerger/releases)
 - open the executable or appImage
 - select your `atmosphere_extended.ini` _(if the software does not get it automatically)_
 - select the community atmosphere
