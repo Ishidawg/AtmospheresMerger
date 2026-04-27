@@ -1,0 +1,73 @@
+name: Build AppImage
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxcb-cursor0 libxcb-xinerama0 fuse
+
+    - name: Install Dependencies
+      run: |
+        pip install pyside6
+        pip install pyinstaller
+
+    - name: Create Executable
+      run: |
+        pyinstaller --noconfirm --onedir --windowed --clean \
+          --name "AtmosphereMerger" \
+          --add-data "assets:assets" \
+          --icon "assets/logo.png" \
+          main.py
+
+    - name: Create AppDir structure
+      run: |
+        mkdir -p AppDir/usr/bin
+        mkdir -p AppDir/usr/lib
+        
+        cp -r dist/AtmosphereMerger/* AppDir/usr/bin/
+        
+        cp assets/logo.png AppDir/AtmosphereMerger.png
+        
+        echo "[Desktop Entry]" > AppDir/AtmosphereMerger.desktop
+        echo "Type=Application" >> AppDir/AtmosphereMerger.desktop
+        echo "Name=Atmosphere Merger" >> AppDir/AtmosphereMerger.desktop
+        echo "Exec=AtmosphereMerger" >> AppDir/AtmosphereMerger.desktop
+        echo "Icon=AtmosphereMerger" >> AppDir/AtmosphereMerger.desktop
+        echo "Categories=Utility;Game;" >> AppDir/AtmosphereMerger.desktop
+        echo "Terminal=false" >> AppDir/AtmosphereMerger.desktop
+        
+        ln -sr AppDir/usr/bin/AtmosphereMerger AppDir/AppRun
+
+    - name: Bundle libxcb-cursor0
+      run: |
+        find /usr/lib -name "libxcb-cursor.so.0" -exec cp {} AppDir/usr/lib/ \;
+        find /usr/lib -name "libxcb-xinerama.so.0" -exec cp {} AppDir/usr/lib/ \;
+
+    - name: Creates AppImage
+      run: |
+        wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool-x86_64.AppImage
+        
+        ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AtmosphereMerger-AppImage
+        path: "*.AppImage"

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -7,11 +9,22 @@ from PySide6.QtWidgets import (
 )
 from enum import IntEnum
 import sys
+import os
 
 from widgets.pages.page_start import PageStart
 from widgets.pages.page_merge import PageMerge
 from widgets.widget_bottom_buttons import WidgetBottomButtons
 from widgets.widget_title import WidgetTitle
+
+
+def get_localdir():
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(
+        os.path.abspath(__file__)))
+
+    if getattr(sys, 'frozen', False):
+        return base_path
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
 
 class Pages(IntEnum):
@@ -78,6 +91,14 @@ class MainWindow(QMainWindow):
 
 def main() -> None:
     app = QApplication(sys.argv)
+
+    app.setOrganizationName("Ishidawg")
+    app.setApplicationName("Atmosphere Merger")
+
+    local_dir: str = get_localdir()
+    icon_path: str = os.path.join(local_dir, "assets", "logo.png")
+
+    app.setWindowIcon(QIcon(icon_path))
 
     window = MainWindow()
     window.show()
