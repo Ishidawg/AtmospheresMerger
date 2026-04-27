@@ -1,54 +1,74 @@
-import configparser
-import os
-import shutil
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget
+)
+from enum import IntEnum
+import sys
 
-merge_file: str = "/home/ishidaw/.local/share/Steam/steamapps/common/Dark Souls II Scholar of the First Sin/Game/ds2le_atmosphere_presets/atmospheres_extended.ini"
-into_file: str = "/home/ishidaw/Games/Mods/Fromsoftware/DS2/atmospheres_extended_original_test.ini"
-test_file: str = "/home/ishidaw/Games/Mods/Fromsoftware/DS2/test.ini"
+from widgets.pages.page_start import PageStart
+from widgets.widget_bottom_buttons import WidgetBottomButtons
+from widgets.widget_title import WidgetTitle
 
 
-def backup_atmospheres(game_path: str) -> None:
-    backup: str = f"{game_path}.bak"
-    shutil.copy2(game_path, backup)
+class Pages(IntEnum):
+    START = 0
+    MERGE = 1
 
 
-def merge_atmospheres(game_path: str, community_path: str) -> None:
-    # Safety check
-    if not os.path.exists(game_path):
-        raise FileNotFoundError("Game base atmosphere was not found")
+class MainWindow(QMainWindow):
 
-    if not os.path.exists(community_path):
-        raise FileNotFoundError("Cannot find community atmosphere")
+    def __init__(self):
+        super().__init__()
 
-    backup_atmospheres(game_path)
+        WINDOW_SIZE: list[int] = [560, 650]
+        WINDOW_TITLE: str = "Atmosphere Merger"
 
-    game_config: configparser.ConfigParser = configparser.ConfigParser()
-    community_config: configparser.ConfigParser = configparser.ConfigParser()
+        self.setWindowTitle(WINDOW_TITLE)
+        self.setFixedSize(WINDOW_SIZE[0], WINDOW_SIZE[1])
 
-    # Reading
-    game_config.read(game_path, encoding='utf-8')
-    community_config.read(community_path, encoding='utf-8')
+        WIDGET_MAIN = QWidget()
+        self.setCentralWidget(WIDGET_MAIN)
+        self.layout_main = QVBoxLayout(WIDGET_MAIN)
 
-    for section in community_config.sections():
+        self.stack = QStackedWidget()
+        self.stack.setContentsMargins(20, 0, 20, 0)
 
-        # Rage says 'There will also be "Atmosphere_Triggers" section do not modify anything under this'
-        if section == "Atmosphere_Triggers":
-            continue
+        self.action_button: WidgetBottomButtons = WidgetBottomButtons()
+        self.page_start: PageStart = PageStart()
 
-        if game_config.has_section(section):
-            game_config.remove_section(section)
+        self.pages: list[QWidget] = [
+            self.page_start,
+        ]
 
-        game_config.add_section(section)
+        for page in self.pages:
+            self.stack.addWidget(page)
 
-        for key, value in community_config.items(section):
-            game_config.set(section, key, value)
+        # Add Wigdets
+        self.layout_main.addWidget(WidgetTitle())
+        self.layout_main.addWidget(self.stack)
+        self.layout_main.addWidget(self.action_button)
 
-    with open(game_path, "w", encoding='utf-8') as file:
-        game_config.write(file, space_around_delimiters=False)
+        # Connect signals
+        self.page_start.feed_finish.connect(self.handle_files)
+
+    def handle_files(self, succcess: bool) -> None:
+        if succcess:
+            self.action_button.btn_next.setEnabled(True)
+            self.action_button.btn_next.show()
+        else:
+            self.action_button.btn_next.hide()
+
+
+def main() -> None:
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":
-    game_file: str = "/home/ishidaw/.local/share/Steam/steamapps/common/Dark Souls II Scholar of the First Sin/Game/ds2le_atmosphere_presets/atmospheres_extended.ini"
-    community_file: str = "/home/ishidaw/Games/Mods/Fromsoftware/DS2/atmospheres_extended_community.ini"
-
-    merge_atmospheres(game_file, community_file)
+    main()
