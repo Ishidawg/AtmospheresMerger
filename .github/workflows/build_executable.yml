@@ -19,13 +19,13 @@ jobs:
 
     - name: Install Python Dependencies
       run: |
-        pip install pyside6 nuitka zstandard
+        pip install pyside6 nuitka
 
     - name: Build with Nuitka
       run: |
-        python -m nuitka --standalone --onefile --assume-yes-for-downloads --enable-plugin=pyside6 --windows-console-mode=disable --include-data-dir=assets=assets --windows-icon-from-ico=assets/logo.ico --output-filename=AtmosphereMerger.exe main.py 
+        python -m nuitka --standalone --assume-yes-for-downloads --enable-plugin=pyside6 --windows-console-mode=disable --include-data-dir=assets=assets --windows-icon-from-ico=assets/logo.ico --output-filename=AtmosphereMerger.exe main.py 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AtmosphereMerger-Windows
-        path: AtmosphereMerger.exe
+        path: main.dist\
