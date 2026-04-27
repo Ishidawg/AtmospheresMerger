@@ -16,11 +16,6 @@ class WidgetBottomButtons(QWidget):
                             Qt.AlignmentFlag.AlignCenter)
 
         self.btn_next = QPushButton("Next")
-
         self.btn_next.setEnabled(False)
-
-        self.btn_next.hide()
-
         layout.addWidget(self.btn_next)
-
         self.setLayout(layout)

@@ -8,7 +8,7 @@ def backup_atmospheres(game_path: str) -> None:
     shutil.copy2(game_path, backup)
 
 
-def merge_atmospheres(game_path: str, community_path: str) -> None:
+def merge_atmospheres(game_path: str, community_path: str, selected_selections: list[str]) -> None:
     # Safety check
     if not os.path.exists(game_path):
         raise FileNotFoundError("Game base atmosphere was not found")
@@ -28,7 +28,11 @@ def merge_atmospheres(game_path: str, community_path: str) -> None:
     for section in community_config.sections():
 
         # Rage says 'There will also be "Atmosphere_Triggers" section do not modify anything under this'
-        if section == "Atmosphere_Triggers":
+        if section == "Atmosphere_Triggers" or section.startswith("level_"):
+            continue
+
+        # Skips sections that is not selected
+        if selected_selections is not None and section not in selected_selections:
             continue
 
         if game_config.has_section(section):

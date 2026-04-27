@@ -9,6 +9,7 @@ from enum import IntEnum
 import sys
 
 from widgets.pages.page_start import PageStart
+from widgets.pages.page_merge import PageMerge
 from widgets.widget_bottom_buttons import WidgetBottomButtons
 from widgets.widget_title import WidgetTitle
 
@@ -38,9 +39,11 @@ class MainWindow(QMainWindow):
 
         self.action_button: WidgetBottomButtons = WidgetBottomButtons()
         self.page_start: PageStart = PageStart()
+        self.page_merge: PageMerge = PageMerge()
 
         self.pages: list[QWidget] = [
             self.page_start,
+            self.page_merge
         ]
 
         for page in self.pages:
@@ -53,13 +56,24 @@ class MainWindow(QMainWindow):
 
         # Connect signals
         self.page_start.feed_finish.connect(self.handle_files)
+        self.action_button.btn_next.clicked.connect(self.switch_to_merge_page)
 
     def handle_files(self, succcess: bool) -> None:
         if succcess:
             self.action_button.btn_next.setEnabled(True)
-            self.action_button.btn_next.show()
-        else:
-            self.action_button.btn_next.hide()
+
+    def switch_to_merge_page(self) -> None:
+        game_path: str = self.page_start.browse_default_input.text()
+        community_path: str = self.page_start.browse_community_input.text()
+
+        self.page_merge.load_atmospheres(game_path, community_path)
+
+        self.stack.setCurrentIndex(Pages.MERGE)
+
+        # Copied from update_next_button (LeShade)
+        self.action_button.btn_next.setText("Close")
+        self.action_button.btn_next.clicked.disconnect()
+        self.action_button.btn_next.clicked.connect(self.close)
 
 
 def main() -> None:

@@ -13,17 +13,17 @@ def get_default_game_path() -> str:
     return "Not Found"
 
 
-def run_merge(parent: QWidget, browse_game_input: QLineEdit, browse_atm_input: QLineEdit) -> None:
-    game_path = browse_game_input.text()
-    community_path = browse_atm_input.text()
-
+def run_merge(parent: QWidget, game_path: str, community_path: str, selected_sections: list[str]) -> None:
     if not game_path or not community_path:
-        QMessageBox.warning(parent, "Missing Files",
-                            "Please select both files before merging.")
+        QMessageBox.warning(
+            parent,
+            "Missing Files",
+            "Please select both files before merging."
+        )
         return
 
     try:
-        merge_atmospheres(game_path, community_path)
+        merge_atmospheres(game_path, community_path, selected_sections)
         QMessageBox.information(parent, "Success", "Atmospheres merged!")
     except FileNotFoundError as e:
         QMessageBox.critical(parent, "File Not Found", str(e))
