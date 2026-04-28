@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QLineEdit, QMessageBox, QWidget
+from PySide6.QtWidgets import QMessageBox, QWidget
 from script.merge import merge_atmospheres
 import sys
 import os

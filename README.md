@@ -8,17 +8,17 @@
 </div>
 
 
-Atmosphere Merger is a tool that should be used to merge community atmospheres _(from users)_ into your `atmosphere_extended.ini`. You can download them on relesaes page for Windows and Linux.
+Atmosphere Merger is a tool that should be used to merge community atmospheres _(from users)_ into your `atmosphere_extended.ini`. You can download them on [releases page](https://github.com/Ishidawg/AtmospheresMerger/releases/tag/1.0.0) for Windows and Linux.
 
 ## Usage
-It's pretty straithforward, but if you need some instructions, here you go:
+It's pretty straightforward, but if you need some instructions, here you go:
 - download the Atmosphere Merger from [releases page](https://github.com/Ishidawg/AtmospheresMerger/releases)
 - open the executable or appImage
 - select your `atmosphere_extended.ini` _(if the software does not get it automatically)_
 - select the community atmosphere
-- click Load
+- click on load
 - select the atmosphere that you want to merge
-- click merge
+- click on merge
 
 **Linux:** Right click > Properties > Permissions > **Check: Allow executing file as program** _(or likely)_
 
